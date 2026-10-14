@@ -1,0 +1,241 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyP9YqbUwiW1f5ojCZINhojH",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/bwuu0042/Room_Occupancy_Predicition_Model/blob/main/notebooks/00_project_log.ipynb.\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Clone the repo in Colab"
+      ],
+      "metadata": {
+        "id": "i81W2sRICiTG"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "iHmbLuXZBiS3",
+        "outputId": "ca5e04f7-04bf-481f-937d-c54a2b368c94"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Cloning into 'Room_Occupancy_Predicition_Model'...\n",
+            "remote: Enumerating objects: 5, done.\u001b[K\n",
+            "remote: Counting objects: 100% (5/5), done.\u001b[K\n",
+            "remote: Compressing objects: 100% (4/4), done.\u001b[K\n",
+            "remote: Total 5 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)\u001b[K\n",
+            "Receiving objects: 100% (5/5), done.\n",
+            "/content/Room_Occupancy_Predicition_Model\n"
+          ]
+        }
+      ],
+      "source": [
+        "from google.colab import userdata\n",
+        "token = userdata.get('GITHUB_TOKEN')\n",
+        "\n",
+        "!git clone https://{token}@github.com/bwuu0042/Room_Occupancy_Predicition_Model.git\n",
+        "%cd Room_Occupancy_Predicition_Model\n",
+        "\n",
+        "!git config user.email \"bwuu0042@student.monash.edu\"\n",
+        "!git config user.name \"Bill W\""
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Adding Project Structure"
+      ],
+      "metadata": {
+        "id": "y5zBGtRhCoXK"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!mkdir -p src notebooks tests docs data/raw data/processed\n",
+        "!touch src/__init__.py tests/__init__.py\n",
+        "!touch data/raw/.gitkeep data/processed/.gitkeep"
+      ],
+      "metadata": {
+        "id": "F6c_hgzECr3v"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%writefile -a .gitignore\n",
+        "\n",
+        "# Project data: large and possibly licensed, never commit\n",
+        "data/raw/*\n",
+        "data/processed/*\n",
+        "!data/raw/.gitkeep\n",
+        "!data/processed/.gitkeep\n",
+        "*.parquet\n",
+        "*.csv\n",
+        "*.xlsx\n",
+        "*.zip"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "HzuwbWTdDT3E",
+        "outputId": "f43167a8-ca58-4471-9856-6cedf7bd0c46"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Appending to .gitignore\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%writefile requirements.txt\n",
+        "numpy\n",
+        "pandas\n",
+        "scipy\n",
+        "scikit-learn\n",
+        "matplotlib\n",
+        "pyarrow\n",
+        "openpyxl\n",
+        "pytest\n",
+        "pytest-html\n",
+        "pdoc"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "mc59QSf-Gd1j",
+        "outputId": "0939805e-75a8-44dc-ad95-b75d876c4774"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Overwriting requirements.txt\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!git status"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "bMdeQhQAGu02",
+        "outputId": "fa3b58ab-13d8-4d17-aa9a-b602cc8bf096"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "On branch main\n",
+            "Your branch is up to date with 'origin/main'.\n",
+            "\n",
+            "Changes not staged for commit:\n",
+            "  (use \"git add <file>...\" to update what will be committed)\n",
+            "  (use \"git restore <file>...\" to discard changes in working directory)\n",
+            "\t\u001b[31mmodified:   .gitignore\u001b[m\n",
+            "\n",
+            "Untracked files:\n",
+            "  (use \"git add <file>...\" to include in what will be committed)\n",
+            "\t\u001b[31mdata/\u001b[m\n",
+            "\t\u001b[31mrequirements.txt\u001b[m\n",
+            "\t\u001b[31msrc/\u001b[m\n",
+            "\t\u001b[31mtests/\u001b[m\n",
+            "\n",
+            "no changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!git add .\n",
+        "!git commit -m \"Add project structure, requirements and data ignore rules\"\n",
+        "!git push"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "iDPHkvq7G5eV",
+        "outputId": "1e67ba31-2eb8-4e86-d424-5db8c13c0331"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[main b1b522b] Add project structure, requirements and data ignore rules\n",
+            " 6 files changed, 20 insertions(+)\n",
+            " create mode 100644 data/processed/.gitkeep\n",
+            " create mode 100644 data/raw/.gitkeep\n",
+            " create mode 100644 requirements.txt\n",
+            " create mode 100644 src/__init__.py\n",
+            " create mode 100644 tests/__init__.py\n",
+            "Enumerating objects: 10, done.\n",
+            "Counting objects: 100% (10/10), done.\n",
+            "Delta compression using up to 2 threads\n",
+            "Compressing objects: 100% (5/5), done.\n",
+            "Writing objects: 100% (8/8), 836 bytes | 836.00 KiB/s, done.\n",
+            "Total 8 (delta 1), reused 0 (delta 0), pack-reused 0\n",
+            "remote: Resolving deltas: 100% (1/1), completed with 1 local object.\u001b[K\n",
+            "To https://github.com/bwuu0042/Room_Occupancy_Predicition_Model.git\n",
+            "   c32cc72..b1b522b  main -> main\n"
+          ]
+        }
+      ]
+    }
+  ]
+}

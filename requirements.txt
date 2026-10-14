@@ -1,0 +1,10 @@
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+pyarrow
+openpyxl
+pytest
+pytest-html
+pdoc

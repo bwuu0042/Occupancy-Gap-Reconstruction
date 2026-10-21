@@ -23,7 +23,13 @@ def cluster_boot_ci(values, groups, n_boot: int = 2000, seed: int = 1):
     Returns:
         np.ndarray: ``[lower, upper]`` 2.5th and 97.5th percentiles of the
         resampled mean.
+
+    Raises:
+        ValueError: If ``values`` is empty or differs in length from
+            ``groups``.
     """
+    if len(values) == 0 or len(values) != len(groups):
+        raise ValueError("values and groups must be non-empty and equal length")
     # Per-day sums and counts let each resample be computed with array maths.
     g = pd.DataFrame({"v": values, "g": groups}).groupby("g")["v"].agg(["sum", "count"])
     s, c = g["sum"].to_numpy(), g["count"].to_numpy()
@@ -48,7 +54,12 @@ def cluster_boot_rmse_diff(mse_a, mse_b, groups, n_boot: int = 2000, seed: int =
     Returns:
         np.ndarray: ``[lower, upper]`` percentiles of the RMSE difference
         (positive means method a is worse).
+
+    Raises:
+        ValueError: If the inputs are empty or differ in length.
     """
+    if len(mse_a) == 0 or not (len(mse_a) == len(mse_b) == len(groups)):
+        raise ValueError("mse_a, mse_b and groups must be non-empty and equal length")
     g = (pd.DataFrame({"a": mse_a, "b": mse_b, "g": groups})
          .groupby("g").agg(a=("a", "sum"), b=("b", "sum"), c=("a", "count")))
     idx = np.random.default_rng(seed).integers(0, len(g), size=(n_boot, len(g)))

@@ -32,10 +32,10 @@ def test_carry_forward_repeats_last_value():
 def test_methods_ignore_hidden_bins():
     """No leakage: changing the hidden truth must not change any prediction."""
     rng = np.random.default_rng(0)
-    y = rng.integers(0, 5, 400).astype(float)
-    slots = np.arange(400) % 336
-    profile = weekly_profile(y, slots, train_end=300)
-    i, gap = 350, 20
+    y = rng.integers(0, 5, 800).astype(float)
+    slots = np.arange(800) % 336
+    profile = weekly_profile(y, slots, train_end=700)
+    i, gap = 750, 20
     y2 = y.copy()
     y2[i:i + gap] = 99
     for fn in (carry_forward, linear_interp):

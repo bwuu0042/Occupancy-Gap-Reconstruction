@@ -257,14 +257,20 @@ hidden bins <code>y[i:i + gap]</code> are never used (a test checks this).</p>
 <p>A position is eligible only if every hidden bin and the <code>context</code> bins
 on each side are known (not NaN), so the true values and both edges exist.</p>
 
-<p>Args:
-    y: Headcount array (people) with NaN for unknown bins.
-    gap: Number of hidden bins (bins, not minutes).
-    context: Known bins required on each side of the gap.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: Integer indices of the first hidden bin for every valid
-    placement. Empty if no placement is valid.</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people) with NaN for unknown bins.</li>
+<li><strong>gap:</strong>  Number of hidden bins (bins, not minutes).</li>
+<li><strong>context:</strong>  Known bins required on each side of the gap.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: Integer indices of the first hidden bin for every valid
+  placement. Empty if no placement is valid.</p>
+</blockquote>
 </div>
 
 
@@ -305,13 +311,19 @@ on each side are known (not NaN), so the true values and both edges exist.</p>
 <p>Local clock time is used so that "9 am Monday" stays in the same slot
 across daylight-saving changes.</p>
 
-<p>Args:
-    index: Timezone-aware (local time) timestamps.
-    slot_minutes: Slot width in minutes; should divide 60 or 1440 evenly.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: Integer slot number per timestamp, from 0 (Monday 00:00)
-    to <code>7 * 24 * 60 / slot_minutes - 1</code>.</p>
+<ul>
+<li><strong>index:</strong>  Timezone-aware (local time) timestamps.</li>
+<li><strong>slot_minutes:</strong>  Slot width in minutes; should divide 60 or 1440 evenly.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: Integer slot number per timestamp, from 0 (Monday 00:00)
+  to <code>7 * 24 * 60 / slot_minutes - 1</code>.</p>
+</blockquote>
 </div>
 
 
@@ -356,16 +368,22 @@ across daylight-saving changes.</p>
 <p>Only bins before <code>train_end</code> are used, so the validation and test
 periods never influence the profile (a test checks this).</p>
 
-<p>Args:
-    y: Headcount array (people) with NaN for unknown bins.
-    slots: Weekly slot number of every bin (see <code><a href="#time_slots">time_slots()</a></code>).
-    train_end: Index of the first bin that must not be used.
-    slot_minutes: Slot width in minutes; sets the number of slots.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: Mean headcount per slot, length <code>7 * 24 * 60 /
-    slot_minutes</code>. A slot with no known training bin is NaN (and numpy
-    emits a "Mean of empty slice" warning).</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people) with NaN for unknown bins.</li>
+<li><strong>slots:</strong>  Weekly slot number of every bin (see <code><a href="#time_slots">time_slots()</a></code>).</li>
+<li><strong>train_end:</strong>  Index of the first bin that must not be used.</li>
+<li><strong>slot_minutes:</strong>  Slot width in minutes; sets the number of slots.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: Mean headcount per slot, length <code>7 * 24 * 60 /
+slot_minutes</code>. A slot with no known training bin is NaN (and numpy
+  emits a "Mean of empty slice" warning).</p>
+</blockquote>
 </div>
 
 
@@ -398,13 +416,19 @@ periods never influence the profile (a test checks this).</p>
 
             <div class="docstring"><p>Baseline: repeat the last known value across the gap.</p>
 
-<p>Args:
-    y: Headcount array (people).
-    i: Index of the first hidden bin (must be &gt;= 1).
-    gap: Number of hidden bins.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: <code>gap</code> copies of <code>y[i - 1]</code>.</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people).</li>
+<li><strong>i:</strong>  Index of the first hidden bin (must be &gt;= 1).</li>
+<li><strong>gap:</strong>  Number of hidden bins.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: <code>gap</code> copies of <code>y[i - 1]</code>.</p>
+</blockquote>
 </div>
 
 
@@ -438,13 +462,19 @@ periods never influence the profile (a test checks this).</p>
 
             <div class="docstring"><p>Straight line from the last known bin to the first known bin after.</p>
 
-<p>Args:
-    y: Headcount array (people).
-    i: Index of the first hidden bin (must be &gt;= 1).
-    gap: Number of hidden bins; <code>y[i + gap]</code> must exist.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: <code>gap</code> interpolated values strictly between the edges.</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people).</li>
+<li><strong>i:</strong>  Index of the first hidden bin (must be &gt;= 1).</li>
+<li><strong>gap:</strong>  Number of hidden bins; <code>y[i + gap]</code> must exist.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: <code>gap</code> interpolated values strictly between the edges.</p>
+</blockquote>
 </div>
 
 
@@ -505,16 +535,22 @@ plain weekly profile and a very large one gives profile-corrected linear
 interpolation. Output is clipped at zero because headcount cannot be
 negative.</p>
 
-<p>Args:
-    y: Headcount array (people).
-    i: Index of the first hidden bin (must be &gt;= 1).
-    gap: Number of hidden bins; <code>y[i + gap]</code> must exist.
-    slots: Weekly slot number of every bin (see <code><a href="#time_slots">time_slots()</a></code>).
-    profile: Weekly profile from <code><a href="#weekly_profile">weekly_profile()</a></code>.
-    tau_bins: Fade time constant in bins (24 bins = 2 h at 5 min).</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: <code>gap</code> reconstructed headcounts (people), all &gt;= 0.</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people).</li>
+<li><strong>i:</strong>  Index of the first hidden bin (must be &gt;= 1).</li>
+<li><strong>gap:</strong>  Number of hidden bins; <code>y[i + gap]</code> must exist.</li>
+<li><strong>slots:</strong>  Weekly slot number of every bin (see <code><a href="#time_slots">time_slots()</a></code>).</li>
+<li><strong>profile:</strong>  Weekly profile from <code><a href="#weekly_profile">weekly_profile()</a></code>.</li>
+<li><strong>tau_bins:</strong>  Fade time constant in bins (24 bins = 2 h at 5 min).</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: <code>gap</code> reconstructed headcounts (people), all &gt;= 0.</p>
+</blockquote>
 </div>
 
 

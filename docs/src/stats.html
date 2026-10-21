@@ -206,16 +206,22 @@
 Resampling days instead of single gaps respects that and avoids
 intervals that are too narrow.</p>
 
-<p>Args:
-    values: One number per gap (for example the MAE difference between
-        two methods).
-    groups: Group label per gap (for example its calendar day).
-    n_boot: Number of bootstrap resamples.
-    seed: Seed of the random generator, for reproducibility.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: <code>[lower, upper]</code> 2.5th and 97.5th percentiles of the
-    resampled mean.</p>
+<ul>
+<li><strong>values:</strong>  One number per gap (for example the MAE difference between
+two methods).</li>
+<li><strong>groups:</strong>  Group label per gap (for example its calendar day).</li>
+<li><strong>n_boot:</strong>  Number of bootstrap resamples.</li>
+<li><strong>seed:</strong>  Seed of the random generator, for reproducibility.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: <code>[lower, upper]</code> 2.5th and 97.5th percentiles of the
+  resampled mean.</p>
+</blockquote>
 </div>
 
 
@@ -265,16 +271,22 @@ intervals that are too narrow.</p>
 on per-day sums of the per-gap mean squared errors and takes the square
 root after averaging.</p>
 
-<p>Args:
-    mse_a: Per-gap mean squared error of method a (people squared).
-    mse_b: Per-gap mean squared error of method b, same gaps and order.
-    groups: Group label per gap (for example its calendar day).
-    n_boot: Number of bootstrap resamples.
-    seed: Seed of the random generator, for reproducibility.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    np.ndarray: <code>[lower, upper]</code> percentiles of the RMSE difference
-    (positive means method a is worse).</p>
+<ul>
+<li><strong>mse_a:</strong>  Per-gap mean squared error of method a (people squared).</li>
+<li><strong>mse_b:</strong>  Per-gap mean squared error of method b, same gaps and order.</li>
+<li><strong>groups:</strong>  Group label per gap (for example its calendar day).</li>
+<li><strong>n_boot:</strong>  Number of bootstrap resamples.</li>
+<li><strong>seed:</strong>  Seed of the random generator, for reproducibility.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>np.ndarray: <code>[lower, upper]</code> percentiles of the RMSE difference
+  (positive means method a is worse).</p>
+</blockquote>
 </div>
 
 
@@ -332,18 +344,24 @@ root after averaging.</p>
 
             <div class="docstring"><p>Compare each method with a reference method on busy gaps.</p>
 
-<p>Args:
-    res: Output of <code>experiment.score_gaps</code>.
-    day_of: Array giving the calendar day of every bin index.
-    reference: Name of the method to compare against.
-    order: Gap-length labels in the order to report.
-    metric: <code>"mae"</code> or <code>"rmse"</code>.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    pd.DataFrame: One row per (gap length, method) with <code>n</code> (number of
-    busy gaps), <code>diff</code> (method minus reference; positive = worse),
-    <code>ci_low</code> and <code>ci_high</code> (95% interval) and <code>real</code> (True if the
-    interval excludes zero).</p>
+<ul>
+<li><strong>res:</strong>  Output of <code>experiment.score_gaps</code>.</li>
+<li><strong>day_of:</strong>  Array giving the calendar day of every bin index.</li>
+<li><strong>reference:</strong>  Name of the method to compare against.</li>
+<li><strong>order:</strong>  Gap-length labels in the order to report.</li>
+<li><strong>metric:</strong>  <code>"mae"</code> or <code>"rmse"</code>.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>pd.DataFrame: One row per (gap length, method) with <code>n</code> (number of
+  busy gaps), <code>diff</code> (method minus reference; positive = worse),
+  <code>ci_low</code> and <code>ci_high</code> (95% interval) and <code>real</code> (True if the
+  interval excludes zero).</p>
+</blockquote>
 </div>
 
 

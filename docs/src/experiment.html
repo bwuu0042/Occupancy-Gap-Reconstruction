@@ -219,19 +219,25 @@
 <p>Features are built once and reused by the decay rule and the learned
 models, so all methods see exactly the same information.</p>
 
-<p>Args:
-    y: Headcount array (people) with NaN for unknown bins.
-    starts: Indices of the first hidden bin of each gap.
-    gap: Gap length in bins (same for all gaps).
-    slots: Weekly slot number of every bin.
-    profile: Weekly profile from the training period.
-    models: Fitted learned models from <code>models.fit_frozen_models</code>.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    dict: Method name -> array of shape <code>(len(starts), gap)</code> with the
-    predicted headcount (people). Keys: <code>carry_forward</code>,
-    <code>linear_interp</code>, <code>weekly_profile</code>, <code>decay_profile</code> and one per
-    learned model.</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people) with NaN for unknown bins.</li>
+<li><strong>starts:</strong>  Indices of the first hidden bin of each gap.</li>
+<li><strong>gap:</strong>  Gap length in bins (same for all gaps).</li>
+<li><strong>slots:</strong>  Weekly slot number of every bin.</li>
+<li><strong>profile:</strong>  Weekly profile from the training period.</li>
+<li><strong>models:</strong>  Fitted learned models from <code>models.fit_frozen_models</code>.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>dict: Method name -> array of shape <code>(len(starts), gap)</code> with the
+  predicted headcount (people). Keys: <code>carry_forward</code>,
+  <code>linear_interp</code>, <code>weekly_profile</code>, <code>decay_profile</code> and one per
+  learned model.</p>
+</blockquote>
 </div>
 
 
@@ -283,21 +289,27 @@ models, so all methods see exactly the same information.</p>
 
             <div class="docstring"><p>Score all methods on the same hidden gaps, for every gap length.</p>
 
-<p>Args:
-    y: Headcount array (people) with NaN for unknown bins.
-    starts: Gap start indices; all must be eligible for the longest gap.
-    slots: Weekly slot number of every bin.
-    profile: Weekly profile from the training period.
-    models: Fitted learned models.
-    gap_lengths: Mapping from label to gap length in bins.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    pd.DataFrame: One row per (gap length, start, method) with columns
-    <code>gap</code>, <code>start</code>, <code>method</code>, <code>mae</code> and <code>mse</code> (people and people
-    squared), <code>bias</code> (prediction minus truth; negative = under-predicts)
-    and <code>busy</code> (True if the true gap contains at least one person).
-    <code>busy</code> uses the hidden truth, so it is a diagnostic and could not be
-    known in a real outage.</p>
+<ul>
+<li><strong>y:</strong>  Headcount array (people) with NaN for unknown bins.</li>
+<li><strong>starts:</strong>  Gap start indices; all must be eligible for the longest gap.</li>
+<li><strong>slots:</strong>  Weekly slot number of every bin.</li>
+<li><strong>profile:</strong>  Weekly profile from the training period.</li>
+<li><strong>models:</strong>  Fitted learned models.</li>
+<li><strong>gap_lengths:</strong>  Mapping from label to gap length in bins.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>pd.DataFrame: One row per (gap length, start, method) with columns
+  <code>gap</code>, <code>start</code>, <code>method</code>, <code>mae</code> and <code>mse</code> (people and people
+  squared), <code>bias</code> (prediction minus truth; negative = under-predicts)
+  and <code>busy</code> (True if the true gap contains at least one person).
+  <code>busy</code> uses the hidden truth, so it is a diagnostic and could not be
+  known in a real outage.</p>
+</blockquote>
 </div>
 
 

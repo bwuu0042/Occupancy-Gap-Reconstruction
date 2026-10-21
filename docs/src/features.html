@@ -218,24 +218,18 @@ profile and the gap geometry are used. The hidden bins <code>y[i:i + gap]</code>
 are never read, so the features cannot leak the answer (a test checks
 this).</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    y: Headcount array (people).
+    i: Index of the first hidden bin (must be &gt;= 1).
+    gap: Number of hidden bins; <code>y[i + gap]</code> must exist.
+    slots: Weekly slot number of every bin.
+    profile: Weekly profile from <code>weekly_profile</code>.</p>
 
-<ul>
-<li><strong>y:</strong>  Headcount array (people).</li>
-<li><strong>i:</strong>  Index of the first hidden bin (must be &gt;= 1).</li>
-<li><strong>gap:</strong>  Number of hidden bins; <code>y[i + gap]</code> must exist.</li>
-<li><strong>slots:</strong>  Weekly slot number of every bin.</li>
-<li><strong>profile:</strong>  Weekly profile from <code>weekly_profile</code>.</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>np.ndarray: Array of shape <code>(gap, 8)</code> with columns listed in
-  <code><a href="#FEATURE_NAMES">FEATURE_NAMES</a></code>: profile value, anomaly at each edge, distance to
-  each edge, distance to the nearest edge, gap length, and the linearly
-  interpolated anomaly.</p>
-</blockquote>
+<p>Returns:
+    np.ndarray: Array of shape <code>(gap, 8)</code> with columns listed in
+    <code><a href="#FEATURE_NAMES">FEATURE_NAMES</a></code>: profile value, anomaly at each edge, distance to
+    each edge, distance to the nearest edge, gap length, and the linearly
+    interpolated anomaly.</p>
 </div>
 
 
@@ -299,28 +293,22 @@ so short and long gaps are both represented. Each gap and both edges must
 be known. The target is the true headcount minus the weekly profile (the
 "anomaly"), which is easier to learn than the raw headcount.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    y: Headcount array (people) with NaN for unknown bins.
+    slots: Weekly slot number of every bin.
+    profile: Weekly profile (built from training data only).
+    lo: First index that may be used (exclusive of the edge bin).
+    hi: Index after the last usable bin; keep within the training period.
+    n_gaps: Number of gaps to simulate.
+    seed: Seed of the random generator, for reproducibility.
+    min_g: Shortest gap in bins.
+    max_g: Longest gap in bins.</p>
 
-<ul>
-<li><strong>y:</strong>  Headcount array (people) with NaN for unknown bins.</li>
-<li><strong>slots:</strong>  Weekly slot number of every bin.</li>
-<li><strong>profile:</strong>  Weekly profile (built from training data only).</li>
-<li><strong>lo:</strong>  First index that may be used (exclusive of the edge bin).</li>
-<li><strong>hi:</strong>  Index after the last usable bin; keep within the training period.</li>
-<li><strong>n_gaps:</strong>  Number of gaps to simulate.</li>
-<li><strong>seed:</strong>  Seed of the random generator, for reproducibility.</li>
-<li><strong>min_g:</strong>  Shortest gap in bins.</li>
-<li><strong>max_g:</strong>  Longest gap in bins.</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>tuple[np.ndarray, np.ndarray]: <code>(X, Y)</code> where <code>X</code> has shape
-  <code>(n_rows, 8)</code> and <code>Y</code> the anomaly per row. A gap is skipped if no
-  valid position is found in 50 tries, so <code>n_rows</code> can be slightly
-  smaller than expected.</p>
-</blockquote>
+<p>Returns:
+    tuple[np.ndarray, np.ndarray]: <code>(X, Y)</code> where <code>X</code> has shape
+    <code>(n_rows, 8)</code> and <code>Y</code> the anomaly per row. A gap is skipped if no
+    valid position is found in 50 tries, so <code>n_rows</code> can be slightly
+    smaller than expected.</p>
 </div>
 
 

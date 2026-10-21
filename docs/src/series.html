@@ -194,29 +194,20 @@ While the room is occupied the value is held for at most <code>max_hold</code>;
 after that the bin is NaN (state unknown), so a real outage never becomes
 ground truth for the gap experiments.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    events: Events of a single space with tz-aware <code>time</code>,
+        <code>occupancystatus</code> ("NotOccupied" or an occupied label) and
+        <code>headcount</code> (people, &gt;= 0) columns.
+    freq: Bin width as a pandas offset string, for example <code>"5min"</code>.
+    max_hold: Longest time an occupied state is held without a new event.</p>
 
-<ul>
-<li><strong>events:</strong>  Events of a single space with tz-aware <code>time</code>,
-<code>occupancystatus</code> ("NotOccupied" or an occupied label) and
-<code>headcount</code> (people, &gt;= 0) columns.</li>
-<li><strong>freq:</strong>  Bin width as a pandas offset string, for example <code>"5min"</code>.</li>
-<li><strong>max_hold:</strong>  Longest time an occupied state is held without a new event.</li>
-</ul>
+<p>Returns:
+    pd.Series: Headcount per bin (people), NaN where the state is unknown,
+    indexed by Australia/Melbourne time. The first and last bins are
+    rounded inwards to whole <code>freq</code> steps.</p>
 
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>pd.Series: Headcount per bin (people), NaN where the state is unknown,
-  indexed by Australia/Melbourne time. The first and last bins are
-  rounded inwards to whole <code>freq</code> steps.</p>
-</blockquote>
-
-<h6 id="raises">Raises:</h6>
-
-<ul>
-<li><strong>KeyError:</strong>  If a required column is missing from <code>events</code>.</li>
-</ul>
+<p>Raises:
+    KeyError: If a required column is missing from <code>events</code>.</p>
 </div>
 
 

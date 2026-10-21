@@ -280,25 +280,16 @@
 <p>Labels such as <code>G.57</code> and <code>G57</code> give the same key, so the two
 metadata sheets can be matched.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    df: Metadata table with a <code>Building</code> column (for example 60.0 or
+        "60") and a <code>Floor/Room</code> column (for example "G.57").</p>
 
-<ul>
-<li><strong>df:</strong>  Metadata table with a <code>Building</code> column (for example 60.0 or
-"60") and a <code>Floor/Room</code> column (for example "G.57").</li>
-</ul>
+<p>Returns:
+    pd.Series: One text key per row, such as <code>60_G57</code>, with the same
+    index as <code>df</code>.</p>
 
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>pd.Series: One text key per row, such as <code>60_G57</code>, with the same
-  index as <code>df</code>.</p>
-</blockquote>
-
-<h6 id="raises">Raises:</h6>
-
-<ul>
-<li><strong>KeyError:</strong>  If the <code>Building</code> or <code>Floor/Room</code> column is missing.</li>
-</ul>
+<p>Raises:
+    KeyError: If the <code>Building</code> or <code>Floor/Room</code> column is missing.</p>
 </div>
 
 
@@ -349,29 +340,20 @@ metadata sheets can be matched.</p>
 <p>Reading as text keeps the 13-digit sensor IDs intact. Both frames get a
 <code>room_key</code> column, and the ENV frame gets a clean <code>sensor_id</code>.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    workbook: Path to <code>Sensor ID and Locations.xlsx</code>. The ENV sheet must
+        be the first sheet and the OCC sheet the second.</p>
 
-<ul>
-<li><strong>workbook:</strong>  Path to <code>Sensor ID and Locations.xlsx</code>. The ENV sheet must
-be the first sheet and the OCC sheet the second.</li>
-</ul>
+<p>Returns:
+    tuple[pd.DataFrame, pd.DataFrame]: <code>(env, occ)</code>. All original
+    columns are text. <code>env</code> has the added columns <code>sensor_id</code> and
+    <code>room_key</code>; <code>occ</code> has the added column <code>room_key</code>.</p>
 
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>tuple[pd.DataFrame, pd.DataFrame]: <code>(env, occ)</code>. All original
-  columns are text. <code>env</code> has the added columns <code>sensor_id</code> and
-  <code>room_key</code>; <code>occ</code> has the added column <code>room_key</code>.</p>
-</blockquote>
-
-<h6 id="raises">Raises:</h6>
-
-<ul>
-<li><strong>FileNotFoundError:</strong>  If <code>workbook</code> does not exist.</li>
-<li><strong>ValueError:</strong>  If the workbook has fewer than two sheets.</li>
-<li><strong>KeyError:</strong>  If an expected column (<code>ID</code>, <code>Building</code> or
-<code>Floor/Room</code>) is missing.</li>
-</ul>
+<p>Raises:
+    FileNotFoundError: If <code>workbook</code> does not exist.
+    ValueError: If the workbook has fewer than two sheets.
+    KeyError: If an expected column (<code>ID</code>, <code>Building</code> or
+        <code>Floor/Room</code>) is missing.</p>
 </div>
 
 
@@ -412,26 +394,17 @@ be the first sheet and the OCC sheet the second.</li>
 
             <div class="docstring"><p>Count events per <code>floorspaceid</code> by reading the big file in chunks.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    occ_zip: Path to the zipped occupancy CSV.
+    chunksize: Rows read per chunk. Larger chunks are faster but use more
+        memory.</p>
 
-<ul>
-<li><strong>occ_zip:</strong>  Path to the zipped occupancy CSV.</li>
-<li><strong>chunksize:</strong>  Rows read per chunk. Larger chunks are faster but use more
-memory.</li>
-</ul>
+<p>Returns:
+    Counter: Mapping from each <code>floorspaceid</code> to its number of events.</p>
 
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>Counter: Mapping from each <code>floorspaceid</code> to its number of events.</p>
-</blockquote>
-
-<h6 id="raises">Raises:</h6>
-
-<ul>
-<li><strong>FileNotFoundError:</strong>  If <code>occ_zip</code> does not exist.</li>
-<li><strong>ValueError:</strong>  If the file has no <code>floorspaceid</code> column.</li>
-</ul>
+<p>Raises:
+    FileNotFoundError: If <code>occ_zip</code> does not exist.
+    ValueError: If the file has no <code>floorspaceid</code> column.</p>
 </div>
 
 
@@ -501,34 +474,25 @@ memory.</li>
 <p>Times are converted to Australia/Melbourne local time, headcount and id
 to numbers, and text columns to categories.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    occ_zip: Path to the zipped occupancy CSV (about 9 million rows).
+    space_ids: Iterable of <code>floorspaceid</code> strings to keep, for example
+        the IDs of G.20 and G.25.
+    chunksize: Rows read per chunk. The file is streamed so it never has
+        to fit in memory whole; larger chunks are faster but use more
+        memory.</p>
 
-<ul>
-<li><strong>occ_zip:</strong>  Path to the zipped occupancy CSV (about 9 million rows).</li>
-<li><strong>space_ids:</strong>  Iterable of <code>floorspaceid</code> strings to keep, for example
-the IDs of G.20 and G.25.</li>
-<li><strong>chunksize:</strong>  Rows read per chunk. The file is streamed so it never has
-to fit in memory whole; larger chunks are faster but use more
-memory.</li>
-</ul>
+<p>Returns:
+    pd.DataFrame: One row per event of the requested spaces, with columns
+    <code>id</code>, <code>deviceid</code>, <code>floorspaceid</code>, <code>occupancystatus</code>,
+    <code>headcount</code> and a timezone-aware <code>time</code> (Australia/Melbourne).
+    Values that cannot be parsed become NaN or NaT instead of raising an
+    error.</p>
 
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>pd.DataFrame: One row per event of the requested spaces, with columns
-  <code>id</code>, <code>deviceid</code>, <code>floorspaceid</code>, <code>occupancystatus</code>,
-  <code>headcount</code> and a timezone-aware <code>time</code> (Australia/Melbourne).
-  Values that cannot be parsed become NaN or NaT instead of raising an
-  error.</p>
-</blockquote>
-
-<h6 id="raises">Raises:</h6>
-
-<ul>
-<li><strong>FileNotFoundError:</strong>  If <code>occ_zip</code> does not exist.</li>
-<li><strong>ValueError:</strong>  If no event matches <code>space_ids</code>, or the file lacks the
-expected columns.</li>
-</ul>
+<p>Raises:
+    FileNotFoundError: If <code>occ_zip</code> does not exist.
+    ValueError: If no event matches <code>space_ids</code>, or the file lacks the
+        expected columns.</p>
 </div>
 
 
@@ -566,25 +530,16 @@ expected columns.</li>
 
             <div class="docstring"><p>Drop duplicate (space, timestamp) rows, keeping the highest <code>id</code>.</p>
 
-<h6 id="arguments">Arguments:</h6>
+<p>Args:
+    events: Event table from <code><a href="#extract_events">extract_events()</a></code>, with the columns
+        <code>floorspaceid</code>, <code>time</code> and <code>id</code>.</p>
 
-<ul>
-<li><strong>events:</strong>  Event table from <code><a href="#extract_events">extract_events()</a></code>, with the columns
-<code>floorspaceid</code>, <code>time</code> and <code>id</code>.</li>
-</ul>
+<p>Returns:
+    pd.DataFrame: Events sorted by space, time and id, with one row per
+    space and timestamp and a fresh index.</p>
 
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>pd.DataFrame: Events sorted by space, time and id, with one row per
-  space and timestamp and a fresh index.</p>
-</blockquote>
-
-<h6 id="raises">Raises:</h6>
-
-<ul>
-<li><strong>KeyError:</strong>  If a required column is missing.</li>
-</ul>
+<p>Raises:
+    KeyError: If a required column is missing.</p>
 </div>
 
 

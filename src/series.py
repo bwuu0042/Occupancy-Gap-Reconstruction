@@ -31,8 +31,11 @@ def build_headcount_series(events: pd.DataFrame, freq: str = "5min",
         rounded inwards to whole ``freq`` steps.
 
     Raises:
+        ValueError: If ``events`` is empty.
         KeyError: If a required column is missing from ``events``.
     """
+    if events.empty:
+        raise ValueError("events is empty; nothing to resample")
     e = events.sort_values("time").copy()
     # Work in UTC so daylight-saving changes cannot create duplicate or
     # missing bins; convert back to local time at the end.

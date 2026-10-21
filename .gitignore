@@ -231,3 +231,6 @@ data/processed/*
 data/
 *.parquet
 *.csv.gz
+data/
+*.parquet
+*.csv.gz

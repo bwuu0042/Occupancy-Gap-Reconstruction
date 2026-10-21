@@ -7,11 +7,24 @@ import pandas as pd
 
 
 def cluster_boot_ci(values, groups, n_boot: int = 2000, seed: int = 1):
-    """95% CI of a mean, resampling whole groups (days) with replacement.
+    """95% confidence interval of a mean, resampling whole groups (days).
 
     Gaps on the same day overlap in time, so their errors are correlated.
-    Resampling days instead of single gaps respects that.
+    Resampling days instead of single gaps respects that and avoids
+    intervals that are too narrow.
+
+    Args:
+        values: One number per gap (for example the MAE difference between
+            two methods).
+        groups: Group label per gap (for example its calendar day).
+        n_boot: Number of bootstrap resamples.
+        seed: Seed of the random generator, for reproducibility.
+
+    Returns:
+        np.ndarray: ``[lower, upper]`` 2.5th and 97.5th percentiles of the
+        resampled mean.
     """
+    # Per-day sums and counts let each resample be computed with array maths.
     g = pd.DataFrame({"v": values, "g": groups}).groupby("g")["v"].agg(["sum", "count"])
     s, c = g["sum"].to_numpy(), g["count"].to_numpy()
     idx = np.random.default_rng(seed).integers(0, len(s), size=(n_boot, len(s)))
@@ -19,10 +32,22 @@ def cluster_boot_ci(values, groups, n_boot: int = 2000, seed: int = 1):
 
 
 def cluster_boot_rmse_diff(mse_a, mse_b, groups, n_boot: int = 2000, seed: int = 1):
-    """95% CI of RMSE(a) - RMSE(b), resampling whole days.
+    """95% confidence interval of RMSE(a) - RMSE(b), resampling whole days.
 
-    Inputs are per-gap mean squared errors. RMSE is the square root of the
-    mean of those, so the bootstrap works on per-day sums.
+    RMSE is the square root of the mean squared error, so the bootstrap works
+    on per-day sums of the per-gap mean squared errors and takes the square
+    root after averaging.
+
+    Args:
+        mse_a: Per-gap mean squared error of method a (people squared).
+        mse_b: Per-gap mean squared error of method b, same gaps and order.
+        groups: Group label per gap (for example its calendar day).
+        n_boot: Number of bootstrap resamples.
+        seed: Seed of the random generator, for reproducibility.
+
+    Returns:
+        np.ndarray: ``[lower, upper]`` percentiles of the RMSE difference
+        (positive means method a is worse).
     """
     g = (pd.DataFrame({"a": mse_a, "b": mse_b, "g": groups})
          .groupby("g").agg(a=("a", "sum"), b=("b", "sum"), c=("a", "count")))
@@ -35,23 +60,26 @@ def cluster_boot_rmse_diff(mse_a, mse_b, groups, n_boot: int = 2000, seed: int =
 
 def compare_to_reference(res: pd.DataFrame, day_of: np.ndarray, reference: str,
                          order: list, metric: str = "mae") -> pd.DataFrame:
-    """Compare each method with ``reference`` on busy gaps, per gap length.
+    """Compare each method with a reference method on busy gaps.
 
     Args:
-        res: Output of ``score_gaps``.
+        res: Output of ``experiment.score_gaps``.
         day_of: Array giving the calendar day of every bin index.
-        reference: Method name to compare against.
-        order: Gap-length labels, in display order.
+        reference: Name of the method to compare against.
+        order: Gap-length labels in the order to report.
         metric: ``"mae"`` or ``"rmse"``.
 
     Returns:
-        One row per (gap, method) with the difference from the reference
-        (positive = worse), its 95% interval, and whether it excludes zero.
+        pd.DataFrame: One row per (gap length, method) with ``n`` (number of
+        busy gaps), ``diff`` (method minus reference; positive = worse),
+        ``ci_low`` and ``ci_high`` (95% interval) and ``real`` (True if the
+        interval excludes zero).
     """
-    busy = res[res["busy"]]
+    busy = res[res["busy"]]                       # diagnostic subset (uses the hidden truth)
     col = "mae" if metric == "mae" else "mse"
     rows = []
     for label in order:
+        # One row per gap, one column per method, so methods are paired by gap.
         w = busy[busy["gap"] == label].pivot_table(index="start", columns="method", values=col)
         groups = day_of[w.index.to_numpy()]
         for m in w.columns:

@@ -1,25 +1,25 @@
-score_gaps on 200 gaps x 8 lengths: 19.38 s
+score_gaps on 200 gaps x 8 lengths: 35.29 s
 
-         189326 function calls (188067 primitive calls) in 19.378 seconds
+         189326 function calls (188067 primitive calls) in 35.294 seconds
 
    Ordered by: cumulative time
    List reduced from 349 to 15 due to restriction <15>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000   19.378   19.378 /content/Occupancy-Gap-Reconstruction/scripts/profile_methods.py:50(timed)
-        1    0.001    0.001   19.378   19.378 /content/Occupancy-Gap-Reconstruction/scripts/profile_methods.py:199(<lambda>)
-        1    0.004    0.004   19.377   19.377 /content/Occupancy-Gap-Reconstruction/src/experiment.py:55(score_gaps)
-        8    0.013    0.002   19.318    2.415 /content/Occupancy-Gap-Reconstruction/src/experiment.py:16(predict_gaps)
-        8    0.000    0.000   19.178    2.397 /usr/local/lib/python3.13/dist-packages/sklearn/pipeline.py:738(predict)
-        8    0.000    0.000   19.168    2.396 /usr/local/lib/python3.13/dist-packages/sklearn/svm/_base.py:420(predict)
-        8   19.165    2.396   19.165    2.396 /usr/local/lib/python3.13/dist-packages/sklearn/svm/_base.py:440(_dense_predict)
-     1600    0.025    0.000    0.090    0.000 /content/Occupancy-Gap-Reconstruction/src/features.py:13(gap_features)
-     3200    0.030    0.000    0.043    0.000 /usr/local/lib/python3.13/dist-packages/numpy/_core/function_base.py:25(linspace)
-       56    0.001    0.000    0.038    0.001 /usr/local/lib/python3.13/dist-packages/pandas/core/frame.py:694(__init__)
-       56    0.001    0.000    0.036    0.001 /usr/local/lib/python3.13/dist-packages/pandas/core/internals/construction.py:423(dict_to_mgr)
-       56    0.000    0.000    0.026    0.000 /usr/local/lib/python3.13/dist-packages/pandas/core/internals/construction.py:96(arrays_to_mgr)
-     1600    0.018    0.000    0.026    0.000 /usr/local/lib/python3.13/dist-packages/numpy/lib/_shape_base_impl.py:633(column_stack)
-       56    0.000    0.000    0.016    0.000 /usr/local/lib/python3.13/dist-packages/pandas/core/internals/managers.py:2121(create_block_manager_from_column_arrays)
-     4912    0.007    0.000    0.013    0.000 /usr/local/lib/python3.13/dist-packages/numpy/_core/numeric.py:303(full)
+        1    0.000    0.000   35.294   35.294 /content/Occupancy-Gap-Reconstruction/scripts/profile_methods.py:50(timed)
+        1    0.001    0.001   35.294   35.294 /content/Occupancy-Gap-Reconstruction/scripts/profile_methods.py:199(<lambda>)
+        1    0.006    0.006   35.294   35.294 /content/Occupancy-Gap-Reconstruction/src/experiment.py:55(score_gaps)
+        8    0.021    0.003   35.210    4.401 /content/Occupancy-Gap-Reconstruction/src/experiment.py:16(predict_gaps)
+        8    0.000    0.000   34.985    4.373 /usr/local/lib/python3.13/dist-packages/sklearn/pipeline.py:738(predict)
+        8    0.000    0.000   34.970    4.371 /usr/local/lib/python3.13/dist-packages/sklearn/svm/_base.py:420(predict)
+        8   34.965    4.371   34.965    4.371 /usr/local/lib/python3.13/dist-packages/sklearn/svm/_base.py:440(_dense_predict)
+     1600    0.039    0.000    0.144    0.000 /content/Occupancy-Gap-Reconstruction/src/features.py:13(gap_features)
+     3200    0.047    0.000    0.070    0.000 /usr/local/lib/python3.13/dist-packages/numpy/_core/function_base.py:25(linspace)
+       56    0.001    0.000    0.057    0.001 /usr/local/lib/python3.13/dist-packages/pandas/core/frame.py:694(__init__)
+       56    0.001    0.000    0.055    0.001 /usr/local/lib/python3.13/dist-packages/pandas/core/internals/construction.py:423(dict_to_mgr)
+     1600    0.030    0.000    0.042    0.000 /usr/local/lib/python3.13/dist-packages/numpy/lib/_shape_base_impl.py:633(column_stack)
+       56    0.001    0.000    0.041    0.001 /usr/local/lib/python3.13/dist-packages/pandas/core/internals/construction.py:96(arrays_to_mgr)
+       56    0.000    0.000    0.024    0.000 /usr/local/lib/python3.13/dist-packages/pandas/core/internals/managers.py:2121(create_block_manager_from_column_arrays)
+       16    0.006    0.000    0.020    0.001 /usr/local/lib/python3.13/dist-packages/sklearn/tree/_classes.py:506(predict)
 
 

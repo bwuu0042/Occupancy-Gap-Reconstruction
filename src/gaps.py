@@ -3,13 +3,38 @@
 All reconstruction functions share one convention: ``y`` is the full series,
 ``i`` is the index of the first hidden bin and ``gap`` is the number of hidden
 bins. Only the known edge bins ``y[i - 1]`` and ``y[i + gap]`` may be read; the
-hidden bins ``y[i:i + gap]`` are never used (a test checks this).
+hidden bins ``y[i:i + gap]`` are never used (a test checks this). Invalid
+inputs raise ``ValueError`` instead of returning silent NaNs.
 """
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pandas as pd
+
+
+def _check_gap(y: np.ndarray, i: int, gap: int) -> None:
+    """Validate the ``(y, i, gap)`` convention shared by the reconstruction rules.
+
+    Args:
+        y: Headcount array (people).
+        i: Index of the first hidden bin.
+        gap: Number of hidden bins.
+
+    Raises:
+        ValueError: If ``gap`` < 1, ``i`` < 1, the gap runs past the end of
+            ``y`` (no bin at ``i + gap``), or either edge bin (``y[i - 1]`` or
+            ``y[i + gap]``) is NaN.
+    """
+    if gap < 1:
+        raise ValueError(f"gap must be >= 1, got {gap}")
+    if i < 1 or i + gap >= len(y):
+        raise ValueError(f"gap [{i}, {i + gap}) needs a known bin on each side "
+                         f"of a series of length {len(y)}")
+    if np.isnan(y[i - 1]) or np.isnan(y[i + gap]):
+        raise ValueError("an edge bin of the gap is NaN (unknown)")
 
 
 def eligible_starts(y: np.ndarray, gap: int, context: int = 1) -> np.ndarray:
@@ -20,15 +45,23 @@ def eligible_starts(y: np.ndarray, gap: int, context: int = 1) -> np.ndarray:
 
     Args:
         y: Headcount array (people) with NaN for unknown bins.
-        gap: Number of hidden bins (bins, not minutes).
-        context: Known bins required on each side of the gap.
+        gap: Number of hidden bins (bins, not minutes); must be >= 1.
+        context: Known bins required on each side of the gap; must be >= 0.
 
     Returns:
         np.ndarray: Integer indices of the first hidden bin for every valid
-        placement. Empty if no placement is valid.
+        placement. Empty if no placement is valid (including when the series
+        is shorter than the window).
+
+    Raises:
+        ValueError: If ``gap`` < 1 or ``context`` < 0.
     """
+    if gap < 1 or context < 0:
+        raise ValueError("gap must be >= 1 and context >= 0")
     known = (~np.isnan(y)).astype(int)
     window = gap + 2 * context
+    if window > len(known):
+        return np.array([], dtype=int)
     # A sliding sum equals the window length only when every bin is known.
     full = np.convolve(known, np.ones(window, dtype=int), mode="valid") == window
     return np.flatnonzero(full) + context
@@ -42,38 +75,72 @@ def time_slots(index: pd.DatetimeIndex, slot_minutes: int = 30) -> np.ndarray:
 
     Args:
         index: Timezone-aware (local time) timestamps.
-        slot_minutes: Slot width in minutes; should divide 60 or 1440 evenly.
+        slot_minutes: Slot width in minutes; must divide 1440 evenly.
 
     Returns:
         np.ndarray: Integer slot number per timestamp, from 0 (Monday 00:00)
         to ``7 * 24 * 60 / slot_minutes - 1``.
+
+    Raises:
+        ValueError: If ``slot_minutes`` is not positive or does not divide
+            1440.
     """
+    if slot_minutes <= 0 or 1440 % slot_minutes:
+        raise ValueError(f"slot_minutes must divide 1440, got {slot_minutes}")
     per_day = 24 * 60 // slot_minutes
     return (index.dayofweek * per_day
             + (index.hour * 60 + index.minute) // slot_minutes).to_numpy()
 
 
 def weekly_profile(y: np.ndarray, slots: np.ndarray, train_end: int,
-                   slot_minutes: int = 30) -> np.ndarray:
+                   slot_minutes: int = 30, on_empty: str = "warn") -> np.ndarray:
     """Compute the mean headcount of each weekly slot from training data only.
 
     Only bins before ``train_end`` are used, so the validation and test
-    periods never influence the profile (a test checks this).
+    periods never influence the profile (a test checks this). Unknown (NaN)
+    bins are ignored.
 
     Args:
         y: Headcount array (people) with NaN for unknown bins.
         slots: Weekly slot number of every bin (see :func:`time_slots`).
-        train_end: Index of the first bin that must not be used.
-        slot_minutes: Slot width in minutes; sets the number of slots.
+        train_end: Index of the first bin that must not be used; must be in
+            ``1..len(y)``.
+        slot_minutes: Slot width in minutes; must divide 1440 evenly.
+        on_empty: What to do if a slot has no known training bin: ``"warn"``
+            (the slot stays NaN and a ``UserWarning`` is issued) or
+            ``"raise"``.
 
     Returns:
         np.ndarray: Mean headcount per slot, length ``7 * 24 * 60 /
-        slot_minutes``. A slot with no known training bin is NaN (and numpy
-        emits a "Mean of empty slice" warning).
+        slot_minutes``. Slots with no known training bin are NaN.
+
+    Raises:
+        ValueError: If ``y`` and ``slots`` differ in length, ``train_end`` is
+            outside ``1..len(y)``, ``slot_minutes`` does not divide 1440,
+            ``on_empty`` is not ``"warn"`` or ``"raise"``, or
+            ``on_empty="raise"`` and a slot is empty.
     """
+    if len(y) != len(slots):
+        raise ValueError("y and slots must have the same length")
+    if not 1 <= train_end <= len(y):
+        raise ValueError(f"train_end must be in 1..{len(y)}, got {train_end}")
+    if slot_minutes <= 0 or 1440 % slot_minutes:
+        raise ValueError(f"slot_minutes must divide 1440, got {slot_minutes}")
+    if on_empty not in ("warn", "raise"):
+        raise ValueError("on_empty must be 'warn' or 'raise'")
     n_slots = 7 * 24 * 60 // slot_minutes
-    return np.array([np.nanmean(y[:train_end][slots[:train_end] == s])
-                     for s in range(n_slots)])
+    yt, st = y[:train_end], slots[:train_end]
+    known = ~np.isnan(yt)
+    # Per-slot sums and counts in one pass (faster than one mask per slot).
+    counts = np.bincount(st[known], minlength=n_slots)[:n_slots]
+    sums = np.bincount(st[known], weights=yt[known], minlength=n_slots)[:n_slots]
+    empty = counts == 0
+    if empty.any():
+        msg = f"{empty.sum()} of {n_slots} weekly slots have no known training bin"
+        if on_empty == "raise":
+            raise ValueError(msg)
+        warnings.warn(msg, UserWarning, stacklevel=2)
+    return np.where(empty, np.nan, sums / np.maximum(counts, 1))
 
 
 def carry_forward(y: np.ndarray, i: int, gap: int) -> np.ndarray:
@@ -86,7 +153,13 @@ def carry_forward(y: np.ndarray, i: int, gap: int) -> np.ndarray:
 
     Returns:
         np.ndarray: ``gap`` copies of ``y[i - 1]``.
+
+    Raises:
+        ValueError: If the gap is invalid or an edge bin is NaN (see
+            ``_check_gap``). The right edge is not used here but is checked so
+            all methods accept exactly the same gaps.
     """
+    _check_gap(y, i, gap)
     return np.full(gap, y[i - 1])
 
 
@@ -100,7 +173,12 @@ def linear_interp(y: np.ndarray, i: int, gap: int) -> np.ndarray:
 
     Returns:
         np.ndarray: ``gap`` interpolated values strictly between the edges.
+
+    Raises:
+        ValueError: If the gap is invalid or an edge bin is NaN (see
+            ``_check_gap``).
     """
+    _check_gap(y, i, gap)
     # linspace includes both edge values, so drop the first and last point.
     return np.linspace(y[i - 1], y[i + gap], gap + 2)[1:-1]
 
@@ -124,11 +202,19 @@ def decay_profile(y: np.ndarray, i: int, gap: int, slots: np.ndarray,
         gap: Number of hidden bins; ``y[i + gap]`` must exist.
         slots: Weekly slot number of every bin (see :func:`time_slots`).
         profile: Weekly profile from :func:`weekly_profile`.
-        tau_bins: Fade time constant in bins (24 bins = 2 h at 5 min).
+        tau_bins: Fade time constant in bins (24 bins = 2 h at 5 min); must
+            be > 0.
 
     Returns:
         np.ndarray: ``gap`` reconstructed headcounts (people), all >= 0.
+
+    Raises:
+        ValueError: If the gap is invalid, an edge bin is NaN (see
+            ``_check_gap``), or ``tau_bins`` <= 0.
     """
+    _check_gap(y, i, gap)
+    if tau_bins <= 0:
+        raise ValueError(f"tau_bins must be > 0, got {tau_bins}")
     t = np.arange(i, i + gap)
     before = y[i - 1] - profile[slots[i - 1]]    # anomaly at the left edge
     after = y[i + gap] - profile[slots[i + gap]]  # anomaly at the right edge

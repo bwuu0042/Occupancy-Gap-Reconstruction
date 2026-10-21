@@ -1,0 +1,8 @@
+method,ops_per_bin,ops_per_24h_gap,note
+carry_forward,0,0,
+linear_interp,2,576,
+weekly_profile,0,0,
+decay_profile,6,1728,
+tree_sq_d5,17,4896,
+tree_abs_d5,17,4896,
+svr_c003,114142,32872896,4389 support vectors

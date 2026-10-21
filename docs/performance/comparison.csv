@@ -1,0 +1,8 @@
+method,MAE_1h,MAE_24h,mean_ms_per_gap,ops_per_24h_gap,interpretability
+carry_forward,1.563,1.426,0.006,0,very high
+decay_profile,1.235,0.931,0.039,1728,"high (one parameter, tau)"
+linear_interp,1.23,1.401,0.017,576,very high
+svr_c003,1.506,0.837,20.513,32872896,low (kernel model)
+tree_abs_d5,1.411,0.829,0.058,4896,medium (readable splits)
+tree_sq_d5,1.428,1.037,0.059,4896,medium (readable splits)
+weekly_profile,1.773,0.968,0.003,0,high

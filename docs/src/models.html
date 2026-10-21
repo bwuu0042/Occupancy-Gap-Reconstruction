@@ -213,14 +213,20 @@ scored, and are applied unchanged to G.25.</p>
 (random subsamples with fixed seeds) because their training cost grows
 quickly with the number of rows. The squared-error tree uses all rows.</p>
 
-<p>Args:
-    X: Feature matrix from <code>features.make_training_set</code>, shape
-        <code>(n_rows, 8)</code>.
-    Y: Anomaly target (people), length <code>n_rows</code>.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    dict: Fitted models keyed <code>"tree_sq_d5"</code>, <code>"tree_abs_d5"</code> and
-    <code>"svr_c003"</code>. Each has a <code>predict</code> method returning the anomaly.</p>
+<ul>
+<li><strong>X:</strong>  Feature matrix from <code>features.make_training_set</code>, shape
+<code>(n_rows, 8)</code>.</li>
+<li><strong>Y:</strong>  Anomaly target (people), length <code>n_rows</code>.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>dict: Fitted models keyed <code>"tree_sq_d5"</code>, <code>"tree_abs_d5"</code> and
+  <code>"svr_c003"</code>. Each has a <code>predict</code> method returning the anomaly.</p>
+</blockquote>
 </div>
 
 

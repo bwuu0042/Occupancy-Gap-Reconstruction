@@ -73,7 +73,7 @@ Measured on G.20 with `scripts/profile_methods.py` (output in `docs/performance/
 
 *My qualitative judgement, not a measurement. MAE is in people on busy G.20 test gaps.
 
-- **SVR prediction dominates scoring time.** Summed over the eight gap lengths it costs about 97 ms per gap, against about 1 ms for all six other methods together, so it accounts for roughly 99% of the 19.4 s taken to score 200 gaps per length. Feature building is not a bottleneck: the tree methods, which include it, cost only 0.03 to 0.05 ms per gap.
+- **SVR prediction dominates scoring time.** The cProfile output (`docs/performance/cprofile.txt`) attributes 19.17 s of the 19.38 s taken to score 200 gaps at each of the eight lengths (98.9%) to the SVR's `predict`. Summed over the eight gap lengths it costs about 97 ms per gap, against about 1 ms for all six other methods together. Feature building is not a bottleneck: `gap_features` took 0.09 s in total over 1,600 calls, and the tree methods, which include it, cost only 0.03 to 0.05 ms per gap.
 - **SVR cost grows linearly with gap length** (0.46 ms at 15 min, 45 ms at 24 h) because every hidden bin is evaluated against 4,389 support vectors. The rule-based methods stay flat at 0.002 to 0.04 ms.
 - **The absolute-error tree is the slowest to train** (88 s on 60,000 rows, about 500 times slower per row than the squared-error tree), but it is as cheap as any tree at prediction time. Building the training set takes 0.2 s.
 - **Memory (peak Python and numpy allocations, `tracemalloc`):** series build 387 MB for one room, training set 36 MB, scoring 3 MB for 50 gaps × 8 lengths. Whole-process peak RSS was about 1 GB, which includes the loaded event table and C-library memory that `tracemalloc` cannot see.
@@ -117,7 +117,7 @@ python -m pdoc src -o docs --docformat google
 python -m pytest tests -q --html=docs/test_report.html --self-contained-html
 ```
 
-**Rebuild the processed data** (needs the raw files, which are not in this repo):
+**Rebuild the processed data** (needs the raw files provided by MMA3001, which are not in this repo):
 
 ```bash
 python -m scripts.build_data --raw /path/to/raw --out /path/to/processed

@@ -15,7 +15,7 @@ This file brings the main evaluation, test, performance, and sensitivity finding
 - The split was chronological: 60% training, 20% validation, and 20% test.
 - Main metrics are MAE, RMSE, and bias, reported in people for simulated gaps that contained occupancy.
 - No method is best for every room, gap duration, and metric.
-- The saved HTML test report shows **17 passed, 0 failed**. The README currently says **29 tests passed**. These counts do not agree; rerun the test suite and regenerate the report before treating either count as the final current count.
+- The regenerated HTML test report shows **29 passed, 0 failed** in 960 ms. This matches the README’s reported test count.
 
 ## Test and implementation checks
 
@@ -31,7 +31,7 @@ The automated tests cover core method outputs, data handling, feature constructi
 **Recorded report:** [HTML pytest report](../docs/test_report.html)  
 **Test code:** [tests folder](../tests/)  
 **Test command:** `python -m pytest tests -q`  
-**Important count discrepancy:** The HTML report was generated on 21 October 2026 at 04:41:54 and records 17 passed in 532 ms. The README says 29 tests passed. Update both after running the current suite and regenerating the HTML report.
+The report was regenerated after the test suite completed and records 29 passed, 0 failed in 960 ms.
 
 ## Final test-set accuracy
 

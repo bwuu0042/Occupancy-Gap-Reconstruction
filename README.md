@@ -166,7 +166,9 @@ The profiling run takes a few minutes, mostly SVR prediction and the absolute-er
 
 ## Use of AI
 
-Claude (Anthropic) was used throughout this project for planning the approach, drafting and debugging code, interpreting results, and reviewing this README. This included the docstrings, the input checks and extra tests, and the profiling script. All results were produced by running the code on the dataset, and I checked the outputs. Examples of AI errors that were caught and corrected during the work include a feature-matrix shape bug, an overstated statistical test, a misread of the G.25 results, and a depth-4 versus depth-5 slip when reading the tree validation curve. Full details are in [`docs/ai_use_log.md`](docs/ai_use_log.md).
+Claude (Anthropic) assisted with planning, drafting and debugging code, interpreting results, and reviewing project documentation. I used Google Colab to run the notebook and check the project outputs. The detailed reflection covers the approximate level of AI contribution, why I used it, how I checked AI-assisted work, decisions that remained mine, errors I caught, and how AI affected my learning. See [docs/ai_use_log.md](docs/ai_use_log.md).
+
+I remain responsible for the submitted code, results, claims, references and engineering decisions. Disclosure does not replace verification.
 
 ## Licence
 

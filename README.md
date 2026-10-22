@@ -64,17 +64,17 @@ Measured on G.20 with `scripts/profile_methods.py` (output in `docs/performance/
 | Method | MAE 1 h | MAE 24 h | ms per 24 h gap | Fit time | Ops per 24 h gap | Interpretability* |
 |---|---|---|---|---|---|---|
 | carry_forward | 1.563 | 1.426 | 0.006 | none | 0 | very high |
-| linear_interp | 1.230 | 1.401 | 0.012 | none | 576 | very high |
+| linear_interp | 1.230 | 1.401 | 0.016 | none | 576 | very high |
 | weekly_profile | 1.773 | 0.968 | 0.002 | none | 0 | high |
-| decay_profile | 1.235 | 0.931 | 0.029 | none | 1,728 | high (one parameter) |
-| tree_sq_d5 | 1.428 | 1.037 | 0.054 | 0.71 s | 4,896 | medium |
-| tree_abs_d5 | 1.411 | 0.829 | 0.053 | 87.7 s | 4,896 | medium |
-| svr_c003 | 1.506 | 0.837 | 45.4 | 1.20 s | 32.9 M | low |
+| decay_profile | 1.235 | 0.931 | 0.045 | none | 1,728 | high (one parameter) |
+| tree_sq_d5 | 1.428 | 1.037 | 0.075 | 0.83 s | 4,896 | medium |
+| tree_abs_d5 | 1.411 | 0.829 | 0.074 | 91.27 s | 4,896 | medium |
+| svr_c003 | 1.506 | 0.837 | 76.995 | 1.81 s | 32,872,896 | low |
 
 *My qualitative judgement, not a measurement. MAE is in people on busy G.20 test gaps.
 
-- **SVR prediction dominates scoring time.** The cProfile output (`docs/performance/cprofile.txt`) attributes 19.17 s of the 19.38 s taken to score 200 gaps at each of the eight lengths (98.9%) to the SVR's `predict`. Summed over the eight gap lengths it costs about 97 ms per gap, against about 1 ms for all six other methods together. Feature building is not a bottleneck: `gap_features` took 0.09 s in total over 1,600 calls, and the tree methods, which include it, cost only 0.03 to 0.05 ms per gap.
-- **SVR cost grows linearly with gap length** (0.46 ms at 15 min, 45 ms at 24 h) because every hidden bin is evaluated against 4,389 support vectors. The rule-based methods stay flat at 0.002 to 0.04 ms.
+- **SVR prediction dominates scoring time.** The current cProfile output (`docs/performance/cprofile.txt`) records 35.29 s to score 200 gaps at each of the eight lengths; SVR prediction accounts for 34.97 s (about 99%). Across gap lengths, SVR averages 20.513 ms per gap, while each other method averages at most 0.059 ms. Timings vary between shared Colab runs. Feature building is not a bottleneck: `gap_features` took 0.09 s in total over 1,600 calls, and the tree methods, which include it, cost only 0.03 to 0.05 ms per gap.
+- **SVR cost grows with gap length** (0.775 ms at 15 min, 76.995 ms at 24 h) because every hidden bin is evaluated against 4,389 support vectors. The rule-based methods and trees stay below 0.08 ms in this run.
 - **The absolute-error tree is the slowest to train** (88 s on 60,000 rows, about 500 times slower per row than the squared-error tree), but it is as cheap as any tree at prediction time. Building the training set takes 0.2 s.
 - **Memory (peak Python and numpy allocations, `tracemalloc`):** series build 387 MB for one room, training set 36 MB, scoring 3 MB for 50 gaps × 8 lengths. Whole-process peak RSS was about 1 GB, which includes the loaded event table and C-library memory that `tracemalloc` cannot see.
 - **Operation counts are hand estimates** (one multiply, add, compare or exponential counts as one). SVR does about 19,000 times the arithmetic of the decay rule but takes about 1,600 times as long, so the rule-based methods are call-overhead bound rather than arithmetic bound. The counts show scaling, not exact cost.
@@ -123,7 +123,7 @@ python -m pytest tests -q --html=docs/test_report.html --self-contained-html
 python -m scripts.build_data --raw /path/to/raw --out /path/to/processed
 ```
 
-**Re-run the analysis:** open `notebooks/01_report.ipynb` and run all cells. It expects `headcount_5min_G20_G25.parquet` in your Drive data folder. The first run of the final-test section takes about 15 minutes and then caches its results. The check against an earlier G.20 run is optional and only works if that earlier results file exists.
+**Re-run the analysis:** open `notebooks/01_report.ipynb` in Colab and run all cells. With `RUN_RAW_PREPROCESSING = False`, it expects the processed Parquet files in `MyDrive/occupancy_data/processed/`. To rebuild from the teaching team's raw files, place the workbook and ZIP in `MyDrive/occupancy_data/` and set the switch to `True`; the rebuilt files go into a separate `processed_from_raw/` folder. The first uncached final-test section takes about 15 minutes. The optional earlier-run comparison skips itself when its file is absent. Performance profiling is also optional and is off by default; enable `RUN_PERFORMANCE_PROFILE` only to regenerate those outputs.
 
 **Optional studies:**
 

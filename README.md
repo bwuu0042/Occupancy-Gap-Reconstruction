@@ -73,12 +73,12 @@ Measured on G.20 with `scripts/profile_methods.py` (output in `docs/performance/
 
 *My qualitative judgement, not a measurement. MAE is in people on busy G.20 test gaps.
 
-- **SVR prediction dominates scoring time.** The current cProfile output (`docs/performance/cprofile.txt`) records 35.29 s to score 200 gaps at each of the eight lengths; SVR prediction accounts for 34.97 s (about 99%). Across gap lengths, SVR averages 20.513 ms per gap, while each other method averages at most 0.059 ms. Timings vary between shared Colab runs. Feature building is not a bottleneck: `gap_features` took 0.09 s in total over 1,600 calls, and the tree methods, which include it, cost only 0.03 to 0.05 ms per gap.
+- **SVR prediction dominates scoring time.** The current cProfile output (`docs/performance/cprofile.txt`) records 35.29 s to score 200 gaps at each of the eight lengths; SVR prediction accounts for 34.97 s (about 99%). Across gap lengths, SVR averages 20.513 ms per gap, while each other method averages at most 0.059 ms. Timings vary between shared Colab runs. Feature building is not a bottleneck: `gap_features` took 0.09 s in total over 1,600 calls, far below the SVR prediction cost.
 - **SVR cost grows with gap length** (0.775 ms at 15 min, 76.995 ms at 24 h) because every hidden bin is evaluated against 4,389 support vectors. The rule-based methods and trees stay below 0.08 ms in this run.
-- **The absolute-error tree is the slowest to train** (88 s on 60,000 rows, about 500 times slower per row than the squared-error tree), but it is as cheap as any tree at prediction time. Building the training set takes 0.2 s.
+- **The absolute-error tree is the slowest to train (91.27 s on 60,000 rows), but it is as cheap as any tree at prediction time. Building the 239,264-row training set takes 0.30 s.
 - **Memory (peak Python and numpy allocations, `tracemalloc`):** series build 387 MB for one room, training set 36 MB, scoring 3 MB for 50 gaps × 8 lengths. Whole-process peak RSS was about 1 GB, which includes the loaded event table and C-library memory that `tracemalloc` cannot see.
-- **Operation counts are hand estimates** (one multiply, add, compare or exponential counts as one). SVR does about 19,000 times the arithmetic of the decay rule but takes about 1,600 times as long, so the rule-based methods are call-overhead bound rather than arithmetic bound. The counts show scaling, not exact cost.
-- **Design implication:** the SVR matches the absolute-error tree's long-gap accuracy (0.837 vs 0.829 at 24 h) at about 850 times the per-gap cost and with the least interpretability, so it is dominated.
+- **Operation counts are hand estimates** (one multiply, add, compare or exponential counts as one). SVR does about 19,000 times the arithmetic of the decay rule but takes about 1,700 times as long, so the rule-based methods are call-overhead bound rather than arithmetic bound. The counts show scaling, not exact cost.
+- **Design implication:** the SVR matches the absolute-error tree's long-gap accuracy (0.837 vs 0.829 at 24 h) at about 1,040 times the 24-hour per-gap cost and with the least interpretability, so it is dominated.
 
 ### Sensitivity
 
@@ -166,7 +166,7 @@ The profiling run takes a few minutes, mostly SVR prediction and the absolute-er
 
 ## Use of AI
 
-Claude (Anthropic) assisted with planning, drafting and debugging code, interpreting results, and reviewing project documentation. OpenAI Codex was used to review the project brief and repository and to draft parts of the report, results summary, README, and AI reflection. I used Google Colab to run the notebook and check project outputs. The detailed reflection discusses the level of AI contribution, why I used these tools, how I checked the work, decisions that remained mine, errors I caught, and effects on my learning. See [docs/ai_use_log.md](docs/ai_use_log.md).
+I used AI moderately to make the workflow easier and more efficient and to apply class theory to practical code, experiments, and tests. Claude (Anthropic) assisted with planning, drafting and debugging code, interpreting results, and reviewing project documentation. OpenAI Codex was used to review the project brief and repository and to draft parts of the report, results summary, README, and AI reflection. I ran and checked the work in Google Colab. See [docs/ai_use_log.md](docs/ai_use_log.md) for the full reflection.
 
 I remain responsible for the submitted code, results, claims, references and engineering decisions. Disclosure does not replace verification.
 

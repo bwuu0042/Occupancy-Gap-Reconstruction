@@ -24,7 +24,7 @@ I also compared the saved accuracy, confidence-interval, sensitivity, and perfor
 
 The final engineering decisions and submitted claims remain my responsibility. I am responsible for understanding the problem, the input and output definitions, why the methods were compared, the meaning of the metrics, and the limitations of simulated gaps and sensor-derived reference values.
 
-The project uses a chronological train, validation, and test split. The learned model settings were selected using validation data and then applied to G.25 without room-specific retuning. I must be able to explain these choices and the results in my presentation and answers.
+The project uses a chronological train, validation, and test split. The learned model settings were selected using validation data and then applied to G.25 without room-specific retuning. In my presentation and answers, I will explain these choices and the results in my own words.
 
 ## Errors and limitations I encountered
 

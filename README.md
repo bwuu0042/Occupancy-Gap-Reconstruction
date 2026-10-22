@@ -166,7 +166,7 @@ The profiling run takes a few minutes, mostly SVR prediction and the absolute-er
 
 ## Use of AI
 
-Claude (Anthropic) assisted with planning, drafting and debugging code, interpreting results, and reviewing project documentation. I used Google Colab to run the notebook and check the project outputs. The detailed reflection covers the approximate level of AI contribution, why I used it, how I checked AI-assisted work, decisions that remained mine, errors I caught, and how AI affected my learning. See [docs/ai_use_log.md](docs/ai_use_log.md).
+Claude (Anthropic) assisted with planning, drafting and debugging code, interpreting results, and reviewing project documentation. OpenAI Codex was used to review the project brief and repository and to draft parts of the report, results summary, README, and AI reflection. I used Google Colab to run the notebook and check project outputs. The detailed reflection discusses the level of AI contribution, why I used these tools, how I checked the work, decisions that remained mine, errors I caught, and effects on my learning. See [docs/ai_use_log.md](docs/ai_use_log.md).
 
 I remain responsible for the submitted code, results, claims, references and engineering decisions. Disclosure does not replace verification.
 

@@ -131,7 +131,7 @@ def weekly_profile(y: np.ndarray, slots: np.ndarray, train_end: int,
     n_slots = 7 * 24 * 60 // slot_minutes
     yt, st = y[:train_end], slots[:train_end]
     known = ~np.isnan(yt)
-    # Per-slot sums and counts in one pass (faster than one mask per slot).
+    # Vectorised per-slot sums and counts avoid building a separate mask per slot.
     counts = np.bincount(st[known], minlength=n_slots)[:n_slots]
     sums = np.bincount(st[known], weights=yt[known], minlength=n_slots)[:n_slots]
     empty = counts == 0

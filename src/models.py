@@ -1,7 +1,9 @@
-"""Frozen model settings chosen on the validation period.
+"""Learned-model settings and decay time constant selected on validation data.
 
-These constants were fixed on G.20 validation gaps before any test gap was
-scored, and are applied unchanged to G.25.
+The learned-model settings and decay time constant were selected using G.20
+validation gaps and applied unchanged to G.25. Rule-based test results were
+inspected during development of the decay profile, so the test period was not
+an untouched holdout.
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ SVR_C = 0.03           # SVR regularisation; 0.01-0.1 gave near-identical result
 
 
 def fit_frozen_models(X: np.ndarray, Y: np.ndarray) -> dict:
-    """Fit the three learned models with the settings frozen before testing.
+    """Fit the three learned models using the validation-selected settings.
 
     The SVR is trained on 8,000 rows and the absolute-error tree on 60,000
     (random subsamples with fixed seeds) because their training cost grows

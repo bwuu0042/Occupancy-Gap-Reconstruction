@@ -13,7 +13,7 @@ This file brings the main evaluation, test, performance, and sensitivity finding
 - Seven methods were evaluated: carry-forward, linear interpolation, weekly profile, decay profile, squared-error decision tree, absolute-error decision tree, and support vector regression (SVR).
 - Gaps ranged from 15 minutes to 24 hours.
 - The split was chronological: 60% training, 20% validation, and 20% test.
-- Main metrics are MAE, RMSE, and bias, reported in people for simulated gaps that contained occupancy.
+- Main metrics are MAE, RMSE, and bias in people for busy gaps, defined as gaps in which at least one hidden bin has a recorded headcount of 1 or more.
 - No method is best for every room, gap duration, and metric.
 - The regenerated HTML test report shows **29 passed, 0 failed** in 960 ms. This matches the README’s reported test count.
 
@@ -64,7 +64,7 @@ The final summary contains all seven methods at all eight gap lengths. The table
 - In G.20, decay profile and linear interpolation are effectively tied at 15 minutes and one hour by MAE. For longer gaps, the learned models often achieve lower MAE, but they under-predict more. At 24 hours, the decay profile has slightly higher MAE than the absolute-error tree but lower RMSE and almost zero bias.
 - In G.25, linear interpolation is strongest for short gaps and remains competitive at longer durations. At 24 hours, the absolute-error tree has lower MAE and RMSE than linear interpolation. The squared-error tree performs poorly at 24 hours.
 - The G.25 test-period mean headcount is reported as 0.377 people versus a training-derived weekly-profile mean of 0.763. This drift helps explain why profile-based methods can overestimate later occupancy.
-- “Busy” is defined using the hidden reference values (at least one person somewhere in the gap). It is useful for retrospective analysis but would not be known during a real outage.
+- A busy gap is one in which at least one hidden bin has a recorded headcount of 1 or more. This uses hidden reference values, so it is useful for retrospective analysis but would not be known during a real outage.
 
 ### Uncertainty
 
@@ -76,7 +76,7 @@ Examples from the saved intervals:
 - G.20 at 24 hours: the absolute-error tree is better than decay profile by 0.1018 MAE, with interval [-0.1348, -0.0693].
 - G.25 at 24 hours: the absolute-error tree is better than linear interpolation by 0.0624 MAE, with interval [-0.0864, -0.0367].
 
-There are many comparisons (96 intervals per room) and no multiple-comparison correction, so borderline findings should be treated cautiously.
+There are 96 intervals per room: 48 MAE and 48 RMSE comparisons (six non-reference methods across eight gap lengths for each metric). No multiple-comparison correction was applied, so borderline findings should be treated cautiously.
 
 **Full accuracy files:** [test summary CSV](final_test_summary_busy_gaps.csv) · [confidence intervals CSV](confidence_intervals.csv)  
 **Figures:** [MAE by gap length](mae_by_gap_length.png) · [RMSE by gap length](rmse_by_gap_length.png)
@@ -109,7 +109,7 @@ The absolute-error tree has the lowest MAE in the 24-hour G.20 performance compa
 
 - **Bin size:** 5, 15, 30, and 60-minute bins were examined. Errors generally increased as bins became coarser, but absolute error values are not directly comparable because the time resolution also changes the target.
 - **Weekly slot width:** 15, 30, and 60-minute slots produced very similar results; the README reports MAE changes no greater than about 0.005 people.
-- **Decay time constant:** τ = 24 bins (two hours) was selected on validation data. Settings from one to 16 hours changed validation error by only about 0.06 people.
+- **Decay time constant:** τ = 24 bins (two hours) was selected on G.20 validation gaps and applied unchanged to G.25. Values from one to 16 hours changed validation MAE by only about 0.06 people.
 - **Tree depth:** depth 5 was selected on validation; greater depth increased overfitting for the squared-error tree.
 - **SVR C:** C values 0.01, 0.03, and 0.1 had validation MAEs within 0.01.
 - **MLP trial:** a neural network was dropped after hitting the 60-iteration limit, taking 29–52 seconds to fit, and not beating the decay profile on validation data.
@@ -132,7 +132,7 @@ The absolute-error tree has the lowest MAE in the 24-hour G.20 performance compa
 1. Sensor-derived headcount is the reference, not an independent count of room occupants. The metrics assess self-consistency with the sensor record.
 2. Only two rooms were usable; results may not generalise to other rooms or buildings.
 3. Gaps are simulated because genuine outages are uncommon. Actual failures may occur under different conditions.
-4. The README notes that the decay method was designed after inspecting test-period gaps and that reference methods were chosen after seeing results. This creates a risk of optimistic comparisons and should be disclosed.
+4. The decay profile was designed after inspecting rule-based results on the test period, and reference methods were selected after viewing results. Although τ and learned-model settings were selected using G.20 validation data and applied unchanged to G.25, this development-time test inspection means the test period was not untouched. The final comparison used seed 9001, but a repeatable sample does not remove the earlier exposure; results may be optimistic.
 5. The test period is about five months and includes the summer break; seasonal drift was not checked against the same months in another year.
 6. The occupancy event log is ambiguous during silence. The 30-minute occupied-state hold is a modelling assumption.
 7. Performance measurements vary across shared Colab runs. Memory and operation-count estimates have the limitations described above.

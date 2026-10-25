@@ -140,16 +140,31 @@ python -m scripts.profile_methods \
 
 The profiling run takes a few minutes, mostly SVR prediction and the absolute-error tree fit.
 
-## Repository layout
+## Important files
 
-| Path | Contents |
-| --- | --- |
-| `src/` | `data` (loading and cleaning), `series` (event log to 5-minute grid), `gaps` (simulation, rule-based methods, input checks), `features` and `models` (learned methods), `experiment` (scoring), `stats` (bootstrap) |
-| `scripts/` | `build_data`, `sensitivity` and `profile_methods` |
-| `tests/` | The 29 automated tests |
-| `notebooks/` | The report notebook (`01_report.ipynb`) and the archived exploration notebook |
-| `results/` | Summary CSVs, confidence intervals, figures |
-| `docs/` | Generated HTML documentation, test report, `sensitivity/` and `performance/` tables, and `ai_use_log.md` |
+```text
+Occupancy-Gap-Reconstruction/
+├── README.md                         # Project overview and run instructions
+├── notebooks/
+│   └── 01_report.ipynb               # Main Google Colab analysis notebook
+├── docs/
+│   ├── project_report.pdf            # Add the final written report here
+│   ├── ai_use_log.md                 # AI use disclosure and reflection
+│   ├── test_report.html               # Saved pytest results
+│   ├── src.html                       # HTML API documentation index
+│   └── performance/                  # Timing, memory and profiling outputs
+├── results/
+│   ├── PROJECT_RESULTS.md             # Readable results and verification summary
+│   ├── final_test_summary_busy_gaps.csv
+│   ├── confidence_intervals.csv
+│   └── mae_by_gap_length.png, rmse_by_gap_length.png
+├── src/                               # Reusable analysis code
+├── scripts/                           # Data build, sensitivity and profiling scripts
+├── tests/                             # Automated tests
+└── requirements.txt                   # Python dependencies
+```
+
+The written report is not in the repository yet. Save the final PDF as `docs/project_report.pdf` to match this tree; the report is also submitted separately through Moodle. The analysis notebook can be opened directly in Google Colab from `notebooks/01_report.ipynb`.
 
 ## Limitations
 

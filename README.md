@@ -15,7 +15,7 @@ When a room's occupancy sensor goes silent, how well can the missing headcount b
 | **Methods** | Carry-forward, linear interpolation, weekly profile, decay profile, two decision trees (squared and absolute error), SVR |
 | **Split** | Chronological 60% train / 20% validation / 20% test, with no shuffling |
 | **Test gaps** | 2,000 per gap length in G.20 and 1,000 in G.25, drawn from the test period (seed 9001) |
-| **Metrics** | MAE, RMSE and bias on "busy" gaps (gaps that contained occupancy) |
+| **Metrics** | MAE, RMSE and bias on busy gaps, where at least one hidden bin has a recorded headcount of 1 or more |
 | **Tests** | 29 automated tests, all passing (known values, no leakage, input handling, analytic check) |
 
 ## How it works
@@ -23,8 +23,8 @@ When a room's occupancy sensor goes silent, how well can the missing headcount b
 1. **Build the series.** `scripts/build_data.py` filters the 9-million-row occupancy file to G.20 and G.25, de-duplicates events, and resamples to a regular 5-minute grid. An empty room is held until the next event. An occupied state is held for at most 30 minutes, then marked unknown, so real outages never become ground truth.
 2. **Learn a weekly profile** (typical headcount per weekday and half-hour slot) from the training period only.
 3. **Hide a gap and reconstruct it.** Every method sees only the two known edge bins, the profile and the gap geometry. The hidden bins are never read (two tests check this, one for the rule-based methods and one for the feature builder).
-   - *Decay profile:* the profile plus the edge anomaly (observed minus profile), interpolated across the gap and faded with `exp(-d/τ)`, where `d` is the distance to the nearest known bin. τ = 24 bins (2 hours).
-   - *Trees and SVR:* trained on simulated gaps from the training period to predict the anomaly from eight features. Settings: depth 5 with `min_samples_leaf=50`, and SVR with C = 0.03. All were chosen on **G.20 validation gaps only** and applied unchanged to G.25. The SVR trains on 8,000 sampled rows and the absolute-error tree on 60,000, for speed.
+   - *Decay profile:* the profile plus the edge anomaly (observed minus profile), interpolated across the gap and faded with `exp(-d/τ)`, where `d` is the distance to the nearest known bin. τ = 24 bins (2 hours) was selected on G.20 validation gaps and applied unchanged to G.25.
+   - *Trees and SVR:* trained on simulated gaps from the training period to predict the anomaly from eight features. Tree depth is 5 with `min_samples_leaf=50`; SVR uses C = 0.03. These learned-model settings were selected on **G.20 validation gaps only** and applied unchanged to G.25. The SVR trains on 8,000 sampled rows and the absolute-error tree on 60,000, for speed.
 4. **Compare with uncertainty.** Each method is compared against a reference (decay profile for G.20, linear interpolation for G.25). Whole days are resampled in a cluster bootstrap, because gaps on the same day are correlated.
 
 ### Input handling
@@ -157,8 +157,8 @@ The profiling run takes a few minutes, mostly SVR prediction and the absolute-er
 - No environmental sensor with usable data is located in either room, so environmental data is not used.
 - The record is an event log, so silence is ambiguous. Genuine outages (a silence of over an hour that began while the room was occupied) numbered 21 in G.20 and 53 in G.25, and these are lower bounds.
 - Gaps are simulated because real outages are rare. Real outages may be less random.
-- Settings were tuned on G.20 only. The decay rule was designed after looking at test-period gaps, so its results may be slightly optimistic. The reference methods (decay for G.20, linear for G.25) were chosen after seeing results.
-- Each room has 96 confidence intervals with no multiple-comparison correction, so borderline intervals should be treated with caution.
+- The decay time constant τ and learned-model settings were selected on G.20 validation data and applied unchanged to G.25. During development, rule-based results from the test period were inspected while designing the decay profile, and reference methods were selected after viewing results. The final comparison used seed 9001, but a repeatable sample does not make the test period untouched; results may be optimistic.
+- Each room has 96 confidence intervals: 48 MAE and 48 RMSE comparisons (six non-reference methods across eight gap lengths for each metric). There is no multiple-comparison correction, so borderline intervals should be treated with caution.
 - The test window is only about five months and covers the summer break, so some of the drift may be seasonal. This was not checked against the same months of the previous year.
 - One gateway device reports both rooms, so a gateway failure would remove both at once.
 - Sensor-derived "truth" means these results measure self-consistency, not agreement with an independent count.
